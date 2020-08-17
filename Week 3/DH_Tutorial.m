@@ -17,8 +17,11 @@ L5 = Link('d',0,'a',0,'alpha',-pi/2,'offset',0)
 
 L6 = Link('d',0,'a',0,'alpha',0,'offset',0)
 
+% create robot model
 myRobot = SerialLink([L1 L2 L3 L4 L5 L6], 'name', 'Puma560')
 
+% create 1x6 vector of joingt angles set at 0
 q = zeros(1,6)
 
+% create robot model
 myRobot.plot(q)
