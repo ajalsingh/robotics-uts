@@ -6,7 +6,9 @@ close all
 clc
 
 %% Options
-interpolation = 1;                                                          % 1 = Quintic Polynomial, 2 = Trapezoidal Velocity
+% Quintic polynomial has smoother transitions in velocity and acceleration
+% trapezoidal method has stepped or platoughs increments
+interpolation = 2;                                                          % 1 = Quintic Polynomial, 2 = Trapezoidal Velocity
 steps = 50;                                                                % Specify no. of steps
 
 %% Load Model
@@ -18,7 +20,7 @@ T1 = transl(0.5,-0.4,0.5);                                                  % Cr
 q1 = p560.ikine(T1);                                                        % Derive joint angles for required end-effector transformation
 T2 = transl(0.5,0.4,0.1);                                                   % Define a translation matrix            
 q2 = p560.ikine(T2);                                                        % Use inverse kinematics to get the joint angles
-
+p560.plot(q1,'trail','r-')
 %% Interpolate joint angles, also calculate relative velocity, accleration
 qMatrix = jtraj(q1,q2,steps);
 switch interpolation
@@ -44,6 +46,7 @@ end
 %% Plot the results
 figure(1)
 p560.plot(qMatrix,'trail','r-')                                             % Plot the motion between poses, draw a red line of the end-effector path
+%% joint angles
 figure(2)
 for i = 1:6
     subplot(3,2,i)
@@ -54,7 +57,7 @@ for i = 1:6
     refline(0,qlim(i,1))                                                    
     refline(0,qlim(i,2))
 end
-
+%% joint velocity
 figure(3)
 for i = 1:6
     subplot(3,2,i)
@@ -63,7 +66,7 @@ for i = 1:6
     xlabel('Step')
     ylabel('Joint Velocity')
 end
-
+%% joint acceleration
 figure(4)
 for i = 1:6
     subplot(3,2,i)
