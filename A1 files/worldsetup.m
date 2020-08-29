@@ -1,4 +1,4 @@
-function worldsetup()
+function [ur3,ur5, bricks] = worldsetup()
 %WORLDSETUP Summary of this function goes here
 %   Detailed explanation goes here
 %% Setup environment and place robots
@@ -8,13 +8,14 @@ clc;
 
 addpath('UR3/');
 
-ur5 = UR5();
+ur5 = LinearUR5(false);
 ur3 = UR3();
 %adjust robot base transform
-ur5.model.base = transl(0.5,0,-0.25);
+ur5.model.base = transl(0.5014,-0.00575,-0.2556) * trotx(pi/2);
 ur3.model.base = transl(-0.5,0,-0.25);
 ur3.PlotAndColourRobot();
 ur5.PlotAndColourRobot();
+% animate(ur5.model, [0 0 0 pi/2 0 0 0]);
 hold on;
 
 

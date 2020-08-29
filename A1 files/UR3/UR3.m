@@ -4,7 +4,8 @@ classdef UR3 < handle
         model;
         
         %> workspace
-        workspace = [-2 2 -2 2 -2 1];   
+%         workspace = [-2 2 -2 2 -2 1];  
+        workspace = [-1 1 -1 1 -1 1]; 
                
         %> If we have a tool model which will replace the final links model, combined ply file of the tool model and the final link models
         toolModelFilename = []; % Available are: 'DabPrintNozzleTool.ply';        
@@ -38,7 +39,7 @@ classdef UR3 < handle
         % Given a name (optional), create and return a UR3 robot model
         function GetUR3Robot(self)
             pause(0.001);
-            name = ['UR_10_',datestr(now,'yyyymmddTHHMMSSFFF')];
+            name = ['UR3_',datestr(now,'yyyymmddTHHMMSSFFF')];
             
             % DH params: https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
             L1 = Link('d',0.1519,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]), 'offset', 0);
