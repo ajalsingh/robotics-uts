@@ -34,8 +34,8 @@ vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 clc;
 
 
-for cols=1:size(bricks,2)
-    trisurf(f,v(:,1)+bricks(1,cols),v(:,2)+bricks(2,cols), v(:,3)+bricks(3,cols) ...
+for rows=1:size(bricks,1)
+    trisurf(f,v(:,1)+bricks(rows,1),v(:,2)+bricks(rows,2), v(:,3)+bricks(rows,3) ...
     ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 end
 end

@@ -14,7 +14,7 @@ textb = ['UR5:  Max vertical reach: ', num2str(distances(3)), ' and Max horizont
 disp(texta);
 disp(textb);
 %% Setup environment
-clc;
+% clc;
 clear;
 close all;
 
@@ -30,7 +30,7 @@ b6 = [1,0.85,0.03]';
 b7 = [-1,0.2,-0.2]';
 b8 = [-1,-0.05,-0.2]';
 b9 = [-1,-0.3,-0.2]';
-bricks = [b1 b2 b3 b4 b5 b6 b7 b8 b9];
+bricks = [b1 b2 b3 b4 b5 b6 b7 b8 b9]';
 
 %Assign drop locations 
 d1 = [-0.2,-0.1,-0.25]'; 
@@ -46,8 +46,6 @@ drop = [d1 d2 d3 d4 d5 d6 d7 d8 d9]';
 
 % Setup environment
 [ur3, ur5] = worldsetup(ur3pos, ur5pos, bricks);
-
-bricks = bricks';
 
 %% 
 
