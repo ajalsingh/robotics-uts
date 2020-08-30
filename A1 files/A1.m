@@ -46,10 +46,27 @@ drop = [d1 d2 d3 d4 d5 d6 d7 d8 d9]';
 
 % Setup environment
 [ur3, ur5] = worldsetup(ur3pos, ur5pos, bricks);
+ur3Origin = ur3.model.fkine(ur3.model.getpos);
 
-%% 
+%% Build a Wall
 
-% MoveArm(ur5.model,bricks(3,:),[0.1,-0.2,0]); 
-MoveArm(ur3.model,bricks(9,:));
-MoveArm(ur3.model,drop(1,:));
+% MoveArm(ur3.model,bricks(9,:));
+% MoveArm(ur3.model,drop(1,:));
+% MoveArm(ur3.model,bricks(8,:));
+% MoveArm(ur3.model,drop(2,:));
+% MoveArm(ur3.model,bricks(7,:));
+% MoveArm(ur3.model,drop(3,:));
+% MoveArm(ur3.model,ur3Origin(1:3,4)');
 
+MoveArm(ur5.model,bricks(6,:)); 
+MoveArm(ur5.model,drop(4,:));
+MoveArm(ur5.model,bricks(5,:)); 
+MoveArm(ur5.model,drop(5,:));
+MoveArm(ur5.model,bricks(4,:)); 
+MoveArm(ur5.model,drop(6,:));
+MoveArm(ur5.model,bricks(3,:)); 
+MoveArm(ur5.model,drop(7,:));
+MoveArm(ur5.model,bricks(2,:)); 
+MoveArm(ur5.model,drop(8,:));
+MoveArm(ur5.model,bricks(1,:)); 
+MoveArm(ur5.model,drop(49,:));
