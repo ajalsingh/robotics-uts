@@ -4,7 +4,7 @@ classdef UR3 < handle
         model;
         
         %> workspace
-        workspace = [-2 2 -2 2 -2 1];  
+        workspace = [-2 2 -2 2 -1 1];  
 %         workspace = [-1 1 -1 1 0 1]; 
                
         %> If we have a tool model which will replace the final links model, combined ply file of the tool model and the final link models

@@ -1,9 +1,15 @@
-function MoveArm(robot,goal,state)
+function MoveArm(robot,goal,brick)
 %RETRIEVE Summary of this function goes here
 %   Detailed explanation goes here
+if nargin ==2
+    state = 0;
+else
+    state = 1;
+end
 
-
-goal(1,3) = goal(1,3) + 0.11;
+if state==0
+    goal(1,3) = goal(1,3) + 0.11;
+end
 steps = 50;
 
 q1 = robot.getpos;                                                        % Derive joint angles for required end-effector transformation
@@ -13,27 +19,26 @@ q2 = robot.ikine(T2,q1, [1 1 1 0 0 0]);
 qMatrix = jtraj(q1,q2,steps);    
 
 %%
-if state==1
+if state ==1
     [f,v,data] = plyread('Brick.ply','tri');
-    vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
-    
-    endEffectorPose = robot.fkine(qMatrix(1,:));
-    endEffectorTrans = endEffectorPose(1:3,4)';
-    
-    brick = trisurf(f,v(:,1)+endEffectorTrans(1),v(:,2)+endEffectorTrans(2), v(:,3)+endEffectorTrans(3) ...
-    ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
-    end
+    % Get vertex count
+    brickVertexCount = size(v,1);
+
+    % Move center point to origin
+    midPoint = sum(v)/brickVertexCount;
+    brickVerts = v - repmat(midPoint,brickVertexCount,1);
 end
 
 %% Plot the results
 % ur5.plot(,'trail','r-')
 for i=1:size(qMatrix,1)
     animate(robot,qMatrix(i,:));
-    
     if state==1
-    endEffectorPose = robot.fkine(qMatrix(i,:));
-    endEffectorTrans = endEffectorPose(1:3,4)';
-    brick.
+        endP = robot.fkine(qMatrix(i,:));
+        endP = transl(endP(1:3,4)');
+        updatedPoints = [endP * [brickVerts,ones(brickVertexCount,1)]']';
+        brick.Vertices = updatedPoints(:,1:3);
+    end
     drawnow();
 end
 

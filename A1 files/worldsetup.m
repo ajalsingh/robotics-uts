@@ -1,4 +1,4 @@
-function [ur3,ur5] = worldsetup(ur3pos, ur5pos, bricks)
+function [ur3,ur5, mesh] = worldsetup(ur3pos, ur5pos, bricks)
 %WORLDSETUP Summary of this function goes here
 %   Detailed explanation goes here
 %% Setup environment and place robots
@@ -32,10 +32,10 @@ trisurf(f,v(:,1)-1,v(:,2), v(:,3)-0.2 ...
 [f,v,data] = plyread('Brick.ply','tri');
 vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 
-
-for rows=1:size(bricks,1)
-    trisurf(f,v(:,1)+bricks(rows,1),v(:,2)+bricks(rows,2), v(:,3)+bricks(rows,3) ...
+for i=1:size(bricks,1)
+    mesh(i) = trisurf(f,v(:,1)+bricks(i,1),v(:,2)+bricks(i,2), v(:,3)+bricks(i,3) ...
     ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 end
+
 end
 
