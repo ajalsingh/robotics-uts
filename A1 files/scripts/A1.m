@@ -1,5 +1,5 @@
-
 %% Setup environment
+% Ensure MATLAB path is root folder
 clc;
 clear;
 close all;
@@ -10,7 +10,7 @@ addpath('scripts/');
 
 % Assign robot base and brick positions
 ur3pos= [0.5014,-0.00575,-0.2556];
-ur5pos=[-0.5,0,-0.25];
+ur5pos=[-0.5,0,-0.35];
 b1 = [1,-0.4,0.03]'; 
 b2 = [1,-0.15,0.03]';
 b3 = [1,0.1,0.03]';
@@ -41,22 +41,11 @@ ur5Origin = ur5.model.fkine(ur5.model.getpos);
 
 %% Maximum reach
 
+distances = robotpointcloud(ur3.model, ur5.model);
 
-distances = pointCloud(ur3.model, ur5.model);
-
-texta = ['UR3:  Max vertical reach: ', num2str(distances(1)), ' and Max horizontal reach: ', num2str(distances(2))];
-textb = ['UR5:  Max vertical reach: ', num2str(distances(3)), ' and Max horizontal reach: ', num2str(distances(4))];
-disp(texta);
-disp(textb);
+fprintf('\nUR3:\nMax Reach(x/y): %f m\nMax Reach(z): %f m\nApprox Volume: %f m3\n', distances(1), distances(2), distances(3));
+fprintf('\nUR5:\nMax Reach(x/y): %f m\nMax Reach(z): %f m\nApprox Volume: %f m3\n', distances(4), distances(5), distances(6));
 %% Build a Wall
-
-parfor i = 1:2
-    if i == 1
-      disp('hello')
-    else
-      disp('bye')
-    end
-end
 
 MoveArm(ur3.model,bricks(9,1:3));
 MoveArm(ur3.model,drop(1,:),brickMesh(9));

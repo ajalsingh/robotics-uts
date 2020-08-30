@@ -26,7 +26,7 @@ trisurf(f,v(:,1)+1,v(:,2), v(:,3) ...
 trisurf(f,v(:,1)-1,v(:,2), v(:,3)-0.2 ...
     ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 
-% Setup bricks
+%% Place bricks
 [f,v,data] = plyread('ply/Brick.ply','tri');
 vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 
@@ -35,5 +35,25 @@ for i=1:size(bricks,1)
     ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 end
 
+%% Place fence
+[f,v,data] = plyread('ply/fence.ply','tri');
+
+% Scale the colours to be 0-to-1 (they are originally 0-to-255
+vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
+
+% Then plot the trisurf
+trisurf(f,v(:,1)-1.8,v(:,2), v(:,3)-0.5 ...
+    ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
+trisurf(f,v(:,1)+1.8,v(:,2), v(:,3)-0.5 ...
+    ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
+%% Place floor
+[f,v,data] = plyread('ply/floor.ply','tri');
+
+% Scale the colours to be 0-to-1 (they are originally 0-to-255
+vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
+
+% Then plot the trisurf
+trisurf(f,v(:,1),v(:,2), v(:,3)-0.3 ...
+    ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 end
 
