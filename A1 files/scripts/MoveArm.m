@@ -20,7 +20,7 @@ qMatrix = jtraj(q1,q2,steps);
 
 %%
 if state ==1
-    [f,v,data] = plyread('Brick.ply','tri');
+    [f,v,data] = plyread('ply/Brick.ply','tri');
     % Get vertex count
     brickVertexCount = size(v,1);
 

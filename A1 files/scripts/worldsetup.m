@@ -3,8 +3,6 @@ function [ur3,ur5, mesh] = worldsetup(ur3pos, ur5pos, bricks)
 %   Detailed explanation goes here
 %% Setup environment and place robots
 
-addpath('UR3/');
-
 ur5 = LinearUR5(false);
 ur3 = UR3();
 %adjust robot base transform
@@ -17,7 +15,7 @@ hold on;
 
 
 % Conveyor file download: https://grabcad.com/library/conveyor-food-processing-roller-system-with-tripod-supports
-[f,v,data] = plyread('conveyor.ply','tri');
+[f,v,data] = plyread('ply/conveyor.ply','tri');
 
 % Scale the colours to be 0-to-1 (they are originally 0-to-255
 vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
@@ -29,7 +27,7 @@ trisurf(f,v(:,1)-1,v(:,2), v(:,3)-0.2 ...
     ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 
 % Setup bricks
-[f,v,data] = plyread('Brick.ply','tri');
+[f,v,data] = plyread('ply/Brick.ply','tri');
 vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 
 for i=1:size(bricks,1)

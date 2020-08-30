@@ -1,22 +1,12 @@
-%% Maximum reach
+
+%% Setup environment
 clc;
 clear;
-
-
-ur3 = UR3;
-ur5 = LinearUR5(false);
 close all;
 
-distances = pointCloud(ur3.model, ur5.model);
-
-texta = ['UR3:  Max vertical reach: ', num2str(distances(1)), ' and Max horizontal reach: ', num2str(distances(2))];
-textb = ['UR5:  Max vertical reach: ', num2str(distances(3)), ' and Max horizontal reach: ', num2str(distances(4))];
-disp(texta);
-disp(textb);
-%% Setup environment
-% clc;
-clear;
-close all;
+addpath('UR3/');
+addpath('ply/');
+addpath('scripts/');
 
 % Assign robot base and brick positions
 ur3pos= [0.5014,-0.00575,-0.2556];
@@ -49,6 +39,15 @@ drop = [d1 d2 d3 d4 d5 d6 d7 d8 d9]';
 ur3Origin = ur3.model.fkine(ur3.model.getpos);
 ur5Origin = ur5.model.fkine(ur5.model.getpos);
 
+%% Maximum reach
+
+
+distances = pointCloud(ur3.model, ur5.model);
+
+texta = ['UR3:  Max vertical reach: ', num2str(distances(1)), ' and Max horizontal reach: ', num2str(distances(2))];
+textb = ['UR5:  Max vertical reach: ', num2str(distances(3)), ' and Max horizontal reach: ', num2str(distances(4))];
+disp(texta);
+disp(textb);
 %% Build a Wall
 
 parfor i = 1:2
