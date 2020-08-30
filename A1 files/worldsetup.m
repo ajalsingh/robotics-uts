@@ -31,7 +31,6 @@ trisurf(f,v(:,1)-1,v(:,2), v(:,3)-0.2 ...
 % Setup bricks
 [f,v,data] = plyread('Brick.ply','tri');
 vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
-clc;
 
 
 for rows=1:size(bricks,1)
