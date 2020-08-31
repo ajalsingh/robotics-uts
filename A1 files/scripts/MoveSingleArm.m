@@ -1,15 +1,16 @@
-function MoveArm(robot,goal,brick)
+function MoveSingleArm(robot,goal,brick)
 %RETRIEVE Summary of this function goes here
 %   Detailed explanation goes here
+clc;
 if nargin ==2
     state = 0;
 else
     state = 1;
 end
 
-if state==0
-    goal(1,3) = goal(1,3) + 0.11;
-end
+% if state==0
+%     goal(1,3) = goal(1,3) + 0.07;
+% end
 steps = 50;
 
 q1 = robot.getpos;                                                        % Derive joint angles for required end-effector transformation
@@ -43,4 +44,3 @@ for i=1:size(qMatrix,1)
 end
 
 end
-

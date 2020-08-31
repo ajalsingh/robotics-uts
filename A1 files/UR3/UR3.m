@@ -41,7 +41,7 @@ classdef UR3 < handle
             pause(0.001);
             name = ['UR3_',datestr(now,'yyyymmddTHHMMSSFFF')];
             
-            % DH params: https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
+%             % DH params: https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
             L1 = Link('d',0.1519,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]), 'offset', 0);
             L2 = Link('d',0,'a',-0.24365,'alpha',0,'qlim', deg2rad([-360 360]), 'offset',-pi/2); % was 'offset',pi/2
             L3 = Link('d',0,'a',-0.21325,'alpha',0,'qlim', deg2rad([-360 360]), 'offset', 0);

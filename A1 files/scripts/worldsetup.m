@@ -6,8 +6,8 @@ function [ur3,ur5, mesh] = worldsetup(ur3pos, ur5pos, bricks)
 ur5 = LinearUR5(false);
 ur3 = UR3();
 %adjust robot base transform
-ur5.model.base = transl(ur3pos) * trotx(pi/2);
-ur3.model.base = transl(ur5pos);
+ur3.model.base = transl(ur3pos);
+ur5.model.base = transl(ur5pos) * trotx(pi/2);
 ur3.PlotAndColourRobot();
 ur5.PlotAndColourRobot();
 % animate(ur5.model, [0 0 0 pi/2 0 0 0]);
