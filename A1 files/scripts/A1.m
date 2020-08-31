@@ -101,25 +101,30 @@ end
 MoveSingleArm(ur3.model,ur3Origin(1:3,4)');
 MoveSingleArm(ur5.model,ur5Origin(1:3,4)');
 
-%%
-MoveSingleArm(ur3.model,bricks(1,1:3));
-MoveSingleArm(ur3.model,drop(1,:),brickMesh(9));
-MoveSingleArm(ur3.model,bricks(2,1:3));
-MoveSingleArm(ur3.model,drop(2,:),brickMesh(8));
-MoveSingleArm(ur3.model,bricks(3,1:3));
-MoveSingleArm(ur3.model,drop(3,:),brickMesh(7));
-MoveSingleArm(ur3.model,ur3Origin(1:3,4)');
+%% Bonus Marks: Rosbag
+clear;
+close all;
+clc;
 
-MoveSingleArm(ur5.model,bricks(6,1:3)); 
-MoveSingleArm(ur5.model,drop(4,:),brickMesh(6));
-MoveSingleArm(ur5.model,bricks(5,1:3)); 
-MoveSingleArm(ur5.model,drop(5,:),brickMesh(5));
-MoveSingleArm(ur5.model,bricks(4,1:3)); 
-MoveSingleArm(ur5.model,drop(6,:),brickMesh(4));
-MoveSingleArm(ur5.model,bricks(8,1:3)); 
-MoveSingleArm(ur5.model,drop(7,:),brickMesh(3));
-MoveSingleArm(ur5.model,bricks(7,1:3)); 
-MoveSingleArm(ur5.model,drop(8,:),brickMesh(2));
-MoveSingleArm(ur5.model,bricks(6,1:3)); 
-MoveSingleArm(ur5.model,drop(9,:),brickMesh(1));
-MoveSingleArm(ur5.model,ur5Origin(1:3,4)');
+ur3 = UR3;
+ur3.PlotAndColourRobot;
+
+robot = ur3.model;
+steps = 50;
+
+qStart= [-1.2217   -0.7854    1.9199    0.5236    1.5708         0];
+animate(robot, qStart);
+%%
+
+
+for i=1:length(q)
+    
+    qMatrix = jtraj(robot.getpos,q(i,:),steps); 
+    for i=1:size(qMatrix,1)
+        animate(robot,qMatrix(i,:));
+        drawnow();
+    end
+end
+%%
+rosbag = CloneRosbag;
+% rosbag.simulate;
