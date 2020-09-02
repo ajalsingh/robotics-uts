@@ -1,4 +1,4 @@
-% function Main()
+function Main()
 %MAIN carries out the main tasks as required
 
 %% Setup
@@ -132,5 +132,5 @@ arms.MoveArms(ur3.model,ur5.model,ur3Origin,ur5Origin);
 %% Bonus Marks: Rosbag simulation
 rosbag = CloneRosbag;
 
-% end
+end
 
