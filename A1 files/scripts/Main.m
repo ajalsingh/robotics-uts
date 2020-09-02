@@ -20,7 +20,7 @@ env = Environment(ur3pos, ur5pos);
 
 % Create instance of manipulator class to control arms
 arms = Manipulator;
-arms.MoveSingleArm(ur5.model, [0 -pi/2 0 pi/2 0 pi/2 0]);
+arms.MoveArms(ur3.model,ur5.model,[-pi/2 0 pi/2 0 -pi/2 0],[0 -pi/2 0 pi/2 0 pi/2 0]);
 
 % save initial poses of robots
 ur3Origin = ur3.model.getpos;

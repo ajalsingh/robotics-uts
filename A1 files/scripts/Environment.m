@@ -24,7 +24,6 @@ classdef Environment
             self.ur3.model.base = transl(ur3pos);
             self.ur3.model.tool = trotx(pi);
             self.ur5.model.base = transl(ur5pos) * trotx(pi/2);
-%             self.ur5.model.tool = trotx(pi);
             self.ur3.PlotAndColourRobot();
             self.ur5.PlotAndColourRobot();
             hold on;

@@ -16,6 +16,7 @@ classdef CloneRosbag
             clc;
 
             ur3 = UR3;
+            ur3.model.tool = trotx(pi);
             ur3.PlotAndColourRobot;
 
             self.robot = ur3.model;
