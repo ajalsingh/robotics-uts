@@ -224,6 +224,9 @@ classdef Manipulator
                     end
                 end
 
+                % plot possible end effector positions
+                plot3(PointCloud(:,1),PointCloud(:,2),PointCloud(:,3),'r.');
+                
                 side = max([PointCloud(:,1); PointCloud(:,2)]);
                 top = max(PointCloud(:,3));
                 values(end+1) = side;

@@ -38,6 +38,8 @@ b6 = [1,    0.85,   0.03]';
 b7 = [-1,   0.2,    -0.2]';
 b8 = [-1,   -0.05,  -0.2]';
 b9 = [-1,   -0.3,   -0.2]';
+
+% Sort brick poses by x coordinate
 brickPoses = sortrows([b1 b2 b3 b4 b5 b6 b7 b8 b9]');
 
 % Create and plot bricks
@@ -59,14 +61,17 @@ fprintf('\nUR5:\nMax Reach(x/y): %f m\nMax Reach(z): %f m\nApprox Volume: %f m3\
 % brick has been removed, it is removed from the array and forgotten.       
 % If an arm has moved all of its allocated bricks, it returns to its
 % initial position and allows the other arm to continue.
-% Once the wall is built, both arms return to initial positions
+% Once the wall is built, both arms return to initia l positions.
+
+        %   UR5 handles bricks where x >= 0
+        %   UR3 handles bricks where x < 0
 
 while size(brickPoses,1) > 0
     
     % Move 2 bricks at a time
     if size(brickPoses,1) > 1 
         
-        % Check whether remaining bricks are on 1 side and allocate
+        % Check whether remaining bricks are on 1 side only and allocate
         % responsible arm. Other arm returns to initial joint states
         if brickPoses(1,1) == brickPoses(end,1)
             
@@ -87,9 +92,8 @@ while size(brickPoses,1) > 0
             brickPoses(1,:) = [];
             drop(1,:) = [];
             brickMesh(1) = [];
-            armMotionComplete = 1;
             
-        %   Move both arms  
+        %   Move both arms.
         else
             arms.MoveArms(ur3.model,ur5.model,brickPoses(1,:),brickPoses(end,:));
             arms.MoveArms(ur3.model,ur5.model,ur3Origin,ur5Origin,brickMesh(1),brickMesh(end));
@@ -127,10 +131,15 @@ while size(brickPoses,1) > 0
     end
 end
 
+% Return to original positions
 arms.MoveArms(ur3.model,ur5.model,ur3Origin,ur5Origin);
 
 %% Bonus Marks: Rosbag simulation
-rosbag = CloneRosbag;
+% bag = rosbag('2018-03-20-18-34-46.bag')
+% readMessages(bag)
+
+CloneRosbag();
+
 
 end
 
