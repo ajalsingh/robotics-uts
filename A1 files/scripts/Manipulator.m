@@ -44,9 +44,15 @@ classdef Manipulator
                 steps = 50;
 
                 % Determine joint angles to goal
-                q1 = robot.getpos;                                                        % Derive joint angles for required end-effector transformation
-                T2 = transl(goal);                                                   % Define a translation matrix            
-                q2 = robot.ikcon(T2,q1);
+                if length(goal) == 7 || length(goal) == 6
+                    q1 = robot.getpos;
+                    q2 = goal;
+                else
+                    q1 = robot.getpos;                                                        % Derive joint angles for required end-effector transformation
+                    T2 = transl(goal);                                                   % Define a translation matrix            
+                    q2 = robot.ikcon(T2,q1);
+                end
+                
 
                 qMatrix = jtraj(q1,q2,steps);    
 
@@ -106,17 +112,29 @@ classdef Manipulator
             else
                 % Determine joint angles to goals
                 steps = 50;
+                
+                % Check whether position or joint states are passed 
+                if length(goal1) == 6
+                    robot1q1 = robot1.getpos;
+                    robot1q2 = goal1;
+                else
+                    robot1q1 = robot1.getpos;                                                        % Derive joint angles for required end-effector transformation
+                    robot1T = transl(goal1);                                                   % Define a translation matrix            
+                    robot1q2 = robot1.ikcon(robot1T,robot1q1);
+                end
 
-                robot1q1 = robot1.getpos;                                                        % Derive joint angles for required end-effector transformation
-                robot1T = transl(goal1);                                                   % Define a translation matrix            
-                robot1q2 = robot1.ikcon(robot1T,robot1q1);
+                if length(goal2) == 7
+                    robot2q1 = robot2.getpos;
+                    robot2q2 = goal2;
+                else
+                    robot2q1 = robot2.getpos;                                                        % Derive joint angles for required end-effector transformation
+                    robot2T = transl(goal2);                                                   % Define a translation matrix            
+                    robot2q2 = robot2.ikine(robot2T,robot2q1);
+                end
+                
 
+                % Determine joint states of motion to goal
                 robot1qMatrix = jtraj(robot1q1,robot1q2,steps);
-
-                robot2q1 = robot2.getpos;                                                        % Derive joint angles for required end-effector transformation
-                robot2T = transl(goal2);                                                   % Define a translation matrix            
-                robot2q2 = robot2.ikine(robot2T,robot2q1);
-
                 robot2qMatrix = jtraj(robot2q1,robot2q2,steps);
 
                 %get brick object properties

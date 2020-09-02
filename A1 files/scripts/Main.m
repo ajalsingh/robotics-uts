@@ -18,12 +18,13 @@ ur3pos=[-0.5,0,-0.15];
 env = Environment(ur3pos, ur5pos);
 [ur3,ur5] = env.BuildWorld();
 
-% save initial poses of robots
-ur3Origin = ur3.model.fkine(ur3.model.getpos);
-ur5Origin = ur5.model.fkine(ur5.model.getpos);
-
 % Create instance of manipulator class to control arms
 arms = Manipulator;
+arms.MoveSingleArm(ur5.model, [0 -pi/2 0 pi/2 0 pi/2 0]);
+
+% save initial poses of robots
+ur3Origin = ur3.model.getpos;
+ur5Origin = ur5.model.getpos;
 
 %% Place Bricks
 
@@ -54,8 +55,6 @@ fprintf('\nUR3:\nMax Reach(x/y): %f m\nMax Reach(z): %f m\nApprox Volume: %f m3\
 fprintf('\nUR5:\nMax Reach(x/y): %f m\nMax Reach(z): %f m\nApprox Volume: %f m3\n', values(4), values(5), values(6));
 
 %% Build a Wall
-armMotionComplete = 0;
-
 % iterate through array of bricks while they have not been moved. Once each
 % brick has been removed, it is removed from the array and forgotten.       
 % If an arm has moved all of its allocated bricks, it returns to its
@@ -68,24 +67,22 @@ while size(brickPoses,1) > 0
     if size(brickPoses,1) > 1 
         
         % Check whether remaining bricks are on 1 side and allocate
-        % responsible arm
+        % responsible arm. Other arm returns to initial joint states
         if brickPoses(1,1) == brickPoses(end,1)
             
             %ur5
             if brickPoses(1,1) >= 0
-                if armMotionComplete ==0
-                    arms.MoveSingleArm(ur3.model,ur3Origin(1:3,4)');
-                end
                 arms.MoveSingleArm(ur5.model,brickPoses(1,:));
+                arms.MoveSingleArm(ur5.model, ur5Origin,brickMesh(1));
                 arms.MoveSingleArm(ur5.model,drop(1,:),brickMesh(1));
+                arms.MoveSingleArm(ur5.model, ur5Origin);
             
             %ur3
             else
-                if armMotionComplete == 0
-                    arms.MoveSingleArm(ur5.model,ur5Origin(1:3,4)');
-                end
                 arms.MoveSingleArm(ur3.model,brickPoses(1,:));
+                arms.MoveSingleArm(ur3.model, ur3Origin);
                 arms.MoveSingleArm(ur3.model,drop(1,:),brickMesh(1));
+                arms.MoveSingleArm(ur3.model, ur3Origin);
             end
             brickPoses(1,:) = [];
             drop(1,:) = [];
@@ -95,7 +92,9 @@ while size(brickPoses,1) > 0
         %   Move both arms  
         else
             arms.MoveArms(ur3.model,ur5.model,brickPoses(1,:),brickPoses(end,:));
+            arms.MoveArms(ur3.model,ur5.model,ur3Origin,ur5Origin,brickMesh(1),brickMesh(end));
             arms.MoveArms(ur3.model,ur5.model,drop(1,:),drop(2,:),brickMesh(1),brickMesh(end));
+            arms.MoveArms(ur3.model,ur5.model,ur3Origin,ur5Origin);
 
             brickPoses(1,:) = [];
             brickPoses(end,:) = [];
@@ -107,12 +106,19 @@ while size(brickPoses,1) > 0
         
     % If only 1 brick remains, determine the arm responsible and move brick with single arm    
     else 
-        if brickPoses(1)>=0
+        %ur5
+        if brickPoses(1,1) >= 0
             arms.MoveSingleArm(ur5.model,brickPoses(1,:));
+            arms.MoveSingleArm(ur5.model, ur5Origin,brickMesh(1));
             arms.MoveSingleArm(ur5.model,drop(1,:),brickMesh(1));
+            arms.MoveSingleArm(ur5.model, ur5Origin);
+
+        %ur3
         else
-            arms.MoveSingleArm(ur3.model,brickPoses(end,:));
+            arms.MoveSingleArm(ur3.model,brickPoses(1,:));
+            arms.MoveSingleArm(ur3.model, ur3Origin);
             arms.MoveSingleArm(ur3.model,drop(1,:),brickMesh(1));
+            arms.MoveSingleArm(ur3.model, ur3Origin);
         end
         
         brickPoses(1,:) = [];
@@ -121,7 +127,7 @@ while size(brickPoses,1) > 0
     end
 end
 
-arms.MoveArms(ur3.model,ur5.model,ur3Origin(1:3,4)',ur5Origin(1:3,4)');
+arms.MoveArms(ur3.model,ur5.model,ur3Origin,ur5Origin);
 
 %% Bonus Marks: Rosbag simulation
 rosbag = CloneRosbag;
