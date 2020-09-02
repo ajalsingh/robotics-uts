@@ -1,16 +1,19 @@
 classdef Bricks
-    %BRICKS Summary of this class goes here
-    %   Detailed explanation goes here
+    %BRICKS Creates bricks at initial positions and determines drop
+    %locations
     
     properties
 
     end
     
     methods
+        %%
         function [self,mesh] = Bricks(bricksPoses)
-            %BRICKS Construct an instance of this class
-            %   Detailed explanation goes here
-            %% Place bricks
+            %   Create and place 9 bricks from ply file
+            %   input:      array of brick poses
+            %   output1:    class object
+            %   output2:    mesh array of type patch
+            
             [f,v,data] = plyread('ply/Brick.ply','tri');
             vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 
@@ -19,8 +22,12 @@ classdef Bricks
                 ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
             end
         end
-        
+        %%
         function drop = CalcDropPoses(self,d1)
+            % Calculates drop positions based on first brick location
+            % input: first drop location
+            % output: matrix of drop locations (x y z)
+            
             d2 = [d1(1),d1(2)+0.15, d1(3)]';
             d3 = [d1(1),d2(2)+0.15, d1(3)]';
             d4 = [d1(1),d1(2),      d1(3)+0.08]'; 
@@ -30,24 +37,6 @@ classdef Bricks
             d8 = [d1(1),d1(2)+0.15, d4(3)+0.08]';
             d9 = [d1(1),d2(2)+0.15, d4(3)+0.08]';
             drop = [d1 d2 d3 d4 d5 d6 d7 d8 d9]';
-        end
-        
-        function modifyPoses(self,brickMesh, bricksPoses)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            [f,v,data] = plyread('ply/Brick.ply','tri');
-            % Get vertex count
-            brickVertexCount = size(v,1);
-
-            % Move center point to origin
-            midPoint = sum(v)/brickVertexCount;
-            brickVerts = v - repmat(midPoint,brickVertexCount,1);
-            
-            for i=1:size(brickMesh,1)
-                updatedPoints2 = [bricksPoses(i) * [brickVerts,ones(brickVertexCount,1)]']';
-                brickMesh(i).Vertices = updatedPoints2(:,1:3);
-            end
-
         end
     end
 end
