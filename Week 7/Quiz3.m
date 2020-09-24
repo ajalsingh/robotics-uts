@@ -94,8 +94,8 @@ mdl_puma560;
 
 % chnage the following:
 p560.base = transl(0,0,0.0);
-q = deg2rad([-90, 30, -80, 0, 45, 0]);
-ball = transl(0.5,0.1,0.6);               %target location in global frame
+q = deg2rad([90, 30, -80, 0, 45, 0]);
+ball = transl(0.4,-0.2,0.7);               %target location in global frame
 %
 
 T = p560.fkine(q);
@@ -113,7 +113,7 @@ clc;
 close all;
 
 mdl_puma560;
-T = transl([0.6 -0.1 0.1]);
+T = transl([0.6 0.1 0.1]);
 p560.ikine(T,qn, [1 1 1 0 0 0])
 
 
@@ -153,18 +153,31 @@ robot.plot(q,'workspace',workspace,'scale',scale);                  % Plot the r
 
 %% PUMA line plane
 
-mdl_puma560
+%Create a puma 560.
+mdl_puma560;
+%The robot is at q = [pi/20,0,-pi/2,0,0,0].
+q = [pi/12,0,-pi/2,0,0,0]%Q INPUT
 
-q = [pi/12,0,-pi/2,0,0,0];
-normal = [-1,0,0];
-point= [1.8,0,0];
-p1 = [-1,0,0];
-p2 = [1,0,0];
+%Determine where a ray cast from the Z axis (the approach vector) of the end effector intersects with a planar wall. (i.e. normal = [-1 0 0], point = [1.2 0 0]).
+endEffectorTr = p560.fkine(q)
+p560.teach(q)
 
-tr = zeros(4,4,p560.n+1);
-tr(:,:,1) = p560.base;
+hold on
 
-[intersectP,check] = LinePlaneIntersection(normal,point,p1,p2);
+normal = [-1,0,0] ;%Q INPUT
+point= [1.8,0,0] ;%Q INPUT
+planeXntersect = 1.8;%Q INPUT
+
+planeBounds = [planeXntersect-eps,planeXntersect+eps,-2,2,-2,2]; 
+[Y,Z] = meshgrid(planeBounds(3):0.1:planeBounds(4),planeBounds(5):0.1:planeBounds(6));
+X = repmat(planeXntersect,size(Y,1),size(Y,2));
+surf(X,Y,Z);
+
+rayEndTr = endEffectorTr * transl(0,0,10);
+point1OnLine = endEffectorTr(1:3,4)';
+point2OnLine = rayEndTr(1:3,4)';
+
+[intersectionPoint,check] = LinePlaneIntersection(normal,point,point1OnLine,point2OnLine)
 %% 3 link plane
 mdl_3link3d;
 q = [-pi/6,0,0];
