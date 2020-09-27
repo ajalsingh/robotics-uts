@@ -60,6 +60,7 @@ steps = 2;
 while ~isempty(find(1 < abs(diff(rad2deg(jtraj(q1,q2,steps)))),1))
     steps = steps + 1;
 end
+steps
 qMatrix = jtraj(q1,q2,steps);
 
 %% 2.7
@@ -86,7 +87,7 @@ else
 end
 robot.animate(qMatrix);
 
-% 3.2: Manually create cartesian waypoints
+%% 3.2: Manually create cartesian waypoints
 robot.animate(q1);
 qWaypoints = [q1 ; robot.ikcon(transl(1.5,-1,0),q1)];
 qWaypoints = [qWaypoints; robot.ikcon(transl(1,-1,0),qWaypoints(end,:))];
@@ -104,7 +105,7 @@ else
 end
 robot.animate(qMatrix);        
 
-% 3.3: Randomly select waypoints (primative RRT)
+%% 3.3: Randomly select waypoints (primative RRT)
 robot.animate(q1);
 qWaypoints = [q1;q2];
 isCollision = true;

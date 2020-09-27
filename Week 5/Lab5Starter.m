@@ -1,5 +1,6 @@
 function [  ] = Lab5Starter( )
 cla
+clear
 set(0,'DefaultFigureWindowStyle','docked')
 clc
 close all
@@ -40,9 +41,9 @@ axis equal
 for q = 0:pi/180:pi/2
     robot.plot(q);
     drawnow();
-%     CheckCollision(robot,sphereCenter,radius);
-%     if CheckCollision(robot,sphereCenter,radius) == 1
-%         disp('UNSAFE: Robot stopped')
-%         break
-%     end
+    CheckCollision(robot,sphereCenter,radius);
+    if CheckCollision(robot,sphereCenter,radius) == 1
+        disp('UNSAFE: Robot stopped')
+        break
+    end
 end
