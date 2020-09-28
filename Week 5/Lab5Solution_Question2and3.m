@@ -68,6 +68,10 @@ result = true(steps,1);
 for i = 1: steps
     result(i) = IsCollision(robot,qMatrix(i,:),faces,vertex,faceNormals,false);
     robot.animate(qMatrix(i,:));
+    if result(i) == 1
+        qMatrix(i,:)
+        break;
+    end
 end
 
 
