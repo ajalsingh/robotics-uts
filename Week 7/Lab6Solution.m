@@ -165,7 +165,7 @@ plot3(scanData(:,1),scanData(:,2),scanData(:,3),'r.');
 keyboard
 
 %% Question 2: Ellipsoid and Point collision checking
-% 2.1
+%% 2.1 create vertices
 clf;
 centerPoint = [0,0,0];
 radii = [3,2,1];
@@ -173,12 +173,12 @@ radii = [3,2,1];
 view(3);
 hold on;
 
-% 2.2
+%% 2.2 plot it
 ellipsoidAtOrigin_h = surf(X,Y,Z);
 % Make the ellipsoid translucent (so we can see the inside and outside points)
 alpha(0.1);
 
-% 2.3
+%% 2.3 plot cubes
 % One side of the cube
 [Y,Z] = meshgrid(-0.75:0.05:0.75,-0.75:0.05:0.75);
 sizeMat = size(Y);
@@ -202,18 +202,18 @@ cubePoints = cubePoints + repmat([2,0,-0.5],size(cubePoints,1),1);
 cube_h = plot3(cubePoints(:,1),cubePoints(:,2),cubePoints(:,3),'b.');
 axis equal
 
-% 2.4
+%% 2.4 check points inside ellipsoid
 algebraicDist = GetAlgebraicDist(cubePoints, centerPoint, radii);
 pointsInside = find(algebraicDist < 1);
 display(['2.4: There are ', num2str(size(pointsInside,1)),' points inside']);
 
-% 2.5
+%% 2.5 translate ellipsoid
 centerPoint = [1,1,1];
 algebraicDist = GetAlgebraicDist(cubePoints, centerPoint, radii);
 pointsInside = find(algebraicDist < 1);
 display(['2.5: There are now ', num2str(size(pointsInside,1)),' points inside']);
 
-% 2.6
+%% 2.6 
 centerPoint = [0,0,0];
 cubePointsAndOnes = [inv(transl(1,1,1)) * [cubePoints,ones(size(cubePoints,1),1)]']';
 updatedCubePoints = cubePointsAndOnes(:,1:3);
@@ -222,7 +222,7 @@ algebraicDist = GetAlgebraicDist(cubePoints, centerPoint, radii);
 pointsInside = find(algebraicDist < 1);
 display(['2.6: There are now ', num2str(size(pointsInside,1)),' points inside']);
 
-% 2.7
+%% 2.7
 centerPoint = [0,0,0];
 cubePointsAndOnes = [inv(transl(1,1,1)*trotx(pi/4)) * [cubePoints,ones(size(cubePoints,1),1)]']';
 updatedCubePoints = cubePointsAndOnes(:,1:3);
@@ -231,7 +231,7 @@ pointsInside = find(algebraicDist < 1);
 display(['2.7: There are now ', num2str(size(pointsInside,1)),' points inside']);
 pause(1);
 
-% 2.8
+%% 2.8
 try delete(cubeAtOigin_h); end;
 try delete(ellipsoidAtOrigin_h); end;
 try delete(oneSideOfCube_h); end;
@@ -258,7 +258,7 @@ camlight
 % robot.teach
 % keyboard
 
-% 2.9
+%% 2.9
 q = [0,0,0]
 tr = robot.fkine(q);
 cubePointsAndOnes = [inv(tr) * [cubePoints,ones(size(cubePoints,1),1)]']';
@@ -267,7 +267,7 @@ algebraicDist = GetAlgebraicDist(updatedCubePoints, centerPoint, radii);
 pointsInside = find(algebraicDist < 1);
 display(['2.9: There are now ', num2str(size(pointsInside,1)),' points inside']);
 
-% 2.10
+%% 2.10
 q = [0,0,0]
 tr = zeros(4,4,robot.n+1);
 tr(:,:,1) = robot.base;
@@ -289,47 +289,49 @@ keyboard
 
 %% Quesiton 3
 % Joint Interpolation
-
-% 3.1
+clc;
+clear
+close all;
+%% 3.1 load robot
 steps = 50;
 mdl_planar2;                                  % Load 2-Link Planar Robot
 
-% 3.2
+%% 3.2 create transforms
 T1 = [eye(3) [1.5 1 0]'; zeros(1,3) 1];       % First pose
 T2 = [eye(3) [1.5 -1 0]'; zeros(1,3) 1];      % Second pose
 
-% 3.3
+%% 3.3 determine joint angles for each pose
 M = [1 1 zeros(1,4)];                         % Masking Matrix
 q1 = p2.ikine(T1,[0 0],M);                    % Solve for joint angles
 q2 = p2.ikine(T2,[0 0],M);                    % Solve for joint angles
 p2.plot(q1,'trail','r-');
 pause(3)
-% 3.4
+%% 3.4 move to pose
 qMatrix = jtraj(q1,q2,steps);
 p2.plot(qMatrix,'trail','r-');
 
-% 3.5: Resolved Motion Rate Control
+%% 3.5: Resolved Motion Rate Control
 steps = 50;
 
-% 3.6
+%% 3.6 create 2 sets of points in the X-Y plane
 x1 = [1.5 1]';
 x2 = [1.5 -1]';
 deltaT = 0.05;                                        % Discrete time step
 
-% 3.7
+%% 3.7 create matrix of waypoints
 x = zeros(2,steps);
 s = lspb(0,1,steps);                                 % Create interpolation scalar
 for i = 1:steps
     x(:,i) = x1*(1-s(i)) + s(i)*x2;                  % Create trajectory in x-y plane
 end
 
-% 3.8
+%% 3.8 
 qMatrix = nan(steps,2);
 
-% 3.9
+%% 3.9 Set the Transformation for the 1st point, and solve for the joint angles
 qMatrix(1,:) = p2.ikine(T1,[0 0],M);                 % Solve for joint angles
 
-% 3.10
+%% 3.10 move using RMRC
 for i = 1:steps-1
     xdot = (x(:,i+1) - x(:,i))/deltaT;                             % Calculate velocity at discrete time step
     J = p2.jacob0(qMatrix(i,:));            % Get the Jacobian at the current state

@@ -20,7 +20,7 @@ axis equal;
 
 v1 = endP;
 
-% 1.3a point laser again
+%% 1.3a point laser again
 q = [ pi/10, pi/2, 0, 0, 0, 0 ] ;
 animate(robot,q);
 tr = robot.fkine(q)
@@ -32,7 +32,7 @@ axis equal;
 
 v2 = endP;
 
-% 1.3b point the laser one last time
+%% 1.3b point the laser one last time
 q = [ -pi/10, 5*pi/12, 0, 0, 0, 0 ];
 animate(robot,q);
 tr = robot.fkine(q)
