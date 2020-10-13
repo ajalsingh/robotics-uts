@@ -13,9 +13,9 @@ clc
 % to triangle collison checks are required?
 
 
-Dof = 4;
+Dof = 5;
 distance = 1;
-triangles = 40;
+triangles = 200;
 checks =Dof*triangles
 
 %% Get rectangularPrism and IsCollision
@@ -30,7 +30,7 @@ camlight
 mdl_planar3;
 
 %%%%%%%%%%% input required below
-[v,f,fn] = RectangularPrism([2,-1,-1],[3,1,1]);
+[v,f,fn] = RectangularPrism([2,-1.1,-1], [3,1.1,1]);
 steps = 50;
 q1 = [pi/3 0 0];
 q2 = [-pi/3 0 0];
@@ -56,9 +56,9 @@ set(0,'DefaultFigureWindowStyle','docked')
 view (3)
 
 %%%%%% input
-centre = [3 2 1];
-radii = [1 2 3];
-[X Y] = meshgrid(-10:1:10, -10:1:10);
+centre = [3,2,-1];
+radii = [1,20,30];
+[X Y] = meshgrid(-5:1:5,-5:1:5);
 %%%%%%
 
 Z = X;
@@ -85,9 +85,9 @@ view (3)
 mdl_planar3;
 
 q(1,:) = [0 1.5708 -1.5708];
-q(2,:) = [0.5 0.5 0.5];
-q(3,:) = [0 -0.7854 -0.7854];
-q(4,:) = [0.7854 0.7854 0.7854];
+q(2,:) = [0.7854 0.1745 -0.1745];
+q(3,:) = [0.7854 -0.7854 0.7854];
+q(4,:) = [0 -0.7854 -0.7854];
 
 index=0;
 prev=10;
@@ -108,6 +108,7 @@ for i=1:size(q,1)
 end
 
 index
+
 %% Load model of puma 560. which of the poses is closes to singularity.
 clear;
 close all
@@ -116,11 +117,11 @@ set(0,'DefaultFigureWindowStyle','docked')
 view (3)
 
 mdl_puma560;
-
-q(1,:) = [0 pi/2 -pi 0 0 0];
-q(2,:) = [0 0.01 0 0 0 0];
-q(3,:) = [0 2.1677 -2.7832 0 -0.9425 0];
-q(4,:) = [0 0.7854 pi 0 0.7854 0];
+p560.qlim
+q(1,:) = [0 0.01 0 0 0 0];
+q(2,:) = [0 2.1677 -2.7332 0 -0.9425 0];
+q(3,:) = [0 1.5708 -3.1416 0 0 0];
+q(4,:) =  [0 0.7854 3.1416 0 0.7854 0];
 
 index=0;
 prev=10;
@@ -142,6 +143,21 @@ for i=1:size(q,1)
 end
 index
 
+%% UR5 manipulability
+clear 
+close all
+clc
+set(0,'DefaultFigureWindowStyle','docked')
+view (3)
+
+r = UR5;
+
+%%%%%% input-
+q = deg2rad([0,55,-85,-45,90,0]);
+%%%%%%
+
+jacobian = r.model.jacob0(q);
+measureOfManip = sqrt(det(jacobian(1:2,:)*jacobian(1:2,:)'))
 
 %% Camera
 clear
@@ -151,10 +167,10 @@ set(0,'DefaultFigureWindowStyle','docked')
 view (3)
 
 %%%%%% input
-cam = CentralCamera('focal', 0.08, 'pixel', 10e-5, 'resolution', [1024,1024], 'centre', [512, 512]);
-q = [1.6; -1; 1.2; -0.5; 0; 0];
-pStar = [600 300 300 600; 300 300 600 600];
-P = [2,2,2,2; -0.3,0.3,0.3,-0.3; 1.3,1.3,0.7,0.7]; 
+cam = CentralCamera('focal', 0.08, 'pixel', 10e-5, 'resolution', [1024 1024], 'centre', [512 512]); 
+q = [1.6; -1; -1.2; -0.5; 0; 0];
+pStar = [700 300 300 700; 300 300 700 700];
+P=[2,2,2,2; -0.4,0.4,0.4,-0.4; 1.4,1.4,0.6,0.6]; 
 %%%%%%
 
 robot = UR10;
