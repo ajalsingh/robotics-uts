@@ -29,7 +29,7 @@ points = [X(:),Y(:),Z(:)];
 spherePc_h = plot3(points(:,1),points(:,2),points(:,3),'r.'); pause
 delete (spherePc_h)
 
-% % Or a triangle mesh
+%% Or a triangle mesh
 tri = delaunay(X,Y,Z);
 sphereTri_h = trimesh(tri,X,Y,Z);
 
