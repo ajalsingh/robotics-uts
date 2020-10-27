@@ -1,60 +1,77 @@
 function  main
-%% load robot and drum
-clear;
-close all;
-clc;
-set(0,'DefaultFigureWindowStyle','docked')
-view (3)
-camlight
+    %% load robot and drum
+    clear;
+    close all;
+    clc;
+    set(0,'DefaultFigureWindowStyle','docked')
+    view (3)
+    camlight
 
-% load puma560
-mdl_puma560;
+    % load puma560
+    mdl_puma560;
 
-%set base
-robot_base = [1.262, 1.189, 1];
-p560.base = transl(robot_base);
+    %set base
+    robot_base = [1.262, 1.189, 1];
+    p560.base = transl(robot_base);
 
-% set tool
-tool_offset = 0.2*tan(pi/4);
-p560.tool = transl([0,0,tool_offset]);
+    % set tool
+    tool_offset = 0.2*tan(pi/4);
+    p560.tool = transl([0,0,tool_offset]);
 
-% plot robot
-p560.plot([0 0 -pi/2 0 0 0])
-xlim([-0.5,2.5]);
-ylim([0,2]);
-zlim([0,2]);
-hold on; 
+    % plot robot
+    p560.plot(qn)
+    xlim([-0.5,2.5]);
+    ylim([0,2]);
+    zlim([0,2]);
+    hold on; 
 
-% Load Drum
-% Place drum
-[f,v,data] = plyread('Drum.ply','tri');
+    % Load Drum
+    [f,v,data] = plyread('Drum.ply','tri');
 
-% Scale the colours to be 0-to-1 (they are originally 0-to-255
-vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
+    % Scale the colours to be 0-to-1 (they are originally 0-to-255
+    vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 
-xoffset = 0.5;
-yoffset = 1;
-drum_transform = transl([xoffset, yoffset, 0]);
+    xoffset = 0.75;
+    yoffset = 1;
+    drum_transform = transl([xoffset, yoffset, 0]);
 
-% Then plot the trisurf
-trisurf(f,v(:,1)+xoffset,v(:,2)+yoffset, v(:,3) ...
-    ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
+    % Then plot the trisurf
+    trisurf(f,v(:,1)+xoffset,v(:,2)+yoffset, v(:,3) ...
+        ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 
-m = Manipulator;
-%% Blast window
-p560.base;
-drum_transform;
+    %% Blast window
 
-x = p560.base(1,4) - drum_transform(1,4);
-y = drum_transform(2,4) - p560.base(2,4);
-z = drum_transform(3,4) - p560.base(3,4);
+    pose_1 = [0.84 1.05 0.65];
+    pose_2 = [0.65 0.92 0.65];
 
-pose_1 = [0.8 1 0.6];
-% pose_1 = [y x z];
+    moveArm(p560, pose_1)
+    moveArm(p560, pose_2)
+    moveArm(p560, qn);
 
-m.MoveSingleArm(p560, pose_1)
-% q = p560.ikcon(transl(pose_1), p560.getpos);
-% p560.animate(q)
-% p560.fkine(p560.getpos)
 end
+
+%% Move arm
+function moveArm(robot, pose)
+    q1 = robot.getpos;
+    
+    if length(pose) == 6
+        q2 = pose;
+    else                                                          
+        T2 = transl(pose) * troty(pi/4+pi);           
+        q2 = robot.ikcon(T2,q1);
+    end
+    steps = 50;
+
+    s = lspb(0, 1, steps); % First, create the scalar function
+    qMatrix = nan(steps, 6); % Create memory allocation for variables
+    for i = 1:steps
+        qMatrix(i, :) = (1 - s(i)) * q1 + s(i) * q2; % Generate interpolated joint angles
+    end
+    
+    for i=1:size(qMatrix,1)
+        animate(robot,qMatrix(i,:));
+        drawnow();
+    end
+end
+
 
