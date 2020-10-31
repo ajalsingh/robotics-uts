@@ -6,24 +6,15 @@ function  main
     set(0,'DefaultFigureWindowStyle','docked')
     view (3)
     camlight
-
-    % load puma560
-    mdl_puma560;
-
+    
     %set base
-    robot_base = [1.262, 1.189, 1];
-    p560.base = transl(robot_base);
-
+    robot_base = [1.262, 1.189, 1]; % student number: 12621189
+    
     % set tool
     tool_offset = 0.2*tan(pi/4);
-    p560.tool = transl([0,0,tool_offset]);
 
-    % plot robot
-    p560.plot(qn)
-    xlim([-0.5,2.5]);
-    ylim([0,2]);
-    zlim([0,2]);
-    hold on; 
+    robot = RobotClass(robot_base, tool_offset);  
+    
 
     % Load Drum
     [f,v,data] = plyread('Drum.ply','tri');
@@ -31,7 +22,7 @@ function  main
     % Scale the colours to be 0-to-1 (they are originally 0-to-255
     vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 
-    xoffset = 0.75;
+    xoffset = 0.5;
     yoffset = 1;
     drum_transform = transl([xoffset, yoffset, 0]);
 
@@ -41,37 +32,17 @@ function  main
 
     %% Blast window
 
-    pose_1 = [0.84 1.05 0.65];
-    pose_2 = [0.65 0.92 0.65];
+    pose_1 = [0.57 1.06 0.75];
+    pose_2 = [0.4 0.92 0.74];
 
-    moveArm(p560, pose_1)
-    moveArm(p560, pose_2)
-    moveArm(p560, qn);
+    % slow enough
+    robot.moveArm(pose_1, 0.5, 0)
+    robot.moveArm(pose_2, 2.6, 1)
+    %% 2 just fsat enough to overload joint 6
+    robot.moveArm(pose_1, 0.5, 0)
+    robot.moveArm(pose_2, 2.5, 1)
+%     robot.moveArm(robot.home, 1.2, 0);
 
-end
-
-%% Move arm
-function moveArm(robot, pose)
-    q1 = robot.getpos;
-    
-    if length(pose) == 6
-        q2 = pose;
-    else                                                          
-        T2 = transl(pose) * troty(pi/4+pi);           
-        q2 = robot.ikcon(T2,q1);
-    end
-    steps = 50;
-
-    s = lspb(0, 1, steps); % First, create the scalar function
-    qMatrix = nan(steps, 6); % Create memory allocation for variables
-    for i = 1:steps
-        qMatrix(i, :) = (1 - s(i)) * q1 + s(i) * q2; % Generate interpolated joint angles
-    end
-    
-    for i=1:size(qMatrix,1)
-        animate(robot,qMatrix(i,:));
-        drawnow();
-    end
 end
 
 
