@@ -12,13 +12,13 @@ classdef RobotClass
     end
     
     methods
-        function self = RobotClass(robot_base, tool_offset)
+        function self = RobotClass(robot_base_transform, tool_offset)
             mdl_puma560;
             self.robot = p560;
-            self.home = deg2rad([0 90 0 0 45 0]);
-            self.initRobot(robot_base, tool_offset)
+            self.home = deg2rad([0 90 0 0 0 0]);
+            self.initRobot(robot_base_transform, tool_offset)
             
-            [f,v,data] = plyread('tool.ply','tri');
+            [f,v,data] = plyread('ply/tool.ply','tri');
             
             % Get vertex count
             self.toolVertexCount = size(v,1);
@@ -34,23 +34,26 @@ classdef RobotClass
             
             T = self.robot.fkine(self.robot.getpos);
             offset = T(1:3,4)';
-            offset(3) = offset(3);
             
             % Then plot the trisurf
             self.tool = trisurf(f,v(:,1)+offset(1),v(:,2)+offset(2), v(:,3)+offset(3) ...
                 ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
+            
+            T = T  * troty(deg2rad(180));
+            updatedPoints = [T * [self.toolVerts,ones(self.toolVertexCount,1)]']';
+            self.tool.Vertices = updatedPoints(:,1:3);
         end
         
-        function initRobot(self,robot_base, tool_offset)
+        function initRobot(self,robot_base_transform, tool_offset)
             %set base
-            self.robot.base = transl(robot_base);
+            self.robot.base = robot_base_transform;
 
             % set tool
-            self.robot.tool = transl([0,0,tool_offset]);
+            self.robot.tool = tool_offset;
 
             % plot robot
             self.robot.plot(self.home)
-            xlim([-0.5,2.5]);
+            xlim([-0.5,1.5]);
             ylim([0,2]);
             zlim([0,2]);
             hold on; 
@@ -73,7 +76,7 @@ classdef RobotClass
             if length(pose) == 6
                 q2 = pose;
             else                                                          
-                T2 = transl(pose) * troty(pi/4+pi);           
+                T2 = transl(pose) * troty(pi);           
                 q2 = self.robot.ikcon(T2,q1);
             end
 
@@ -91,7 +94,9 @@ classdef RobotClass
             tau = nan(steps,6);                                                         % Array of joint torques
             mass = 2.09;                                                                  % Payload mass (kg)
             self.robot.payload(mass,[0;0;0]); 
-            tau_max = [97.6 186.4 89.4 24.2 20.1 21.3]'; 
+            tau_max = [97.6 186.4 89.4 24.2 20.1 21.3]';
+            qd_max = [8, 10, 10, 5, 5, 5]';
+            qdd_max = [10, 12, 12, 8, 8, 8]';
 
             for i = 1:steps-1
                 qdd(i,:) = (1/dt)^2 * (qMatrix(i+1,:) - qMatrix(i,:) - dt*qd(i,:));                 % Calculate joint acceleration to get to next set of joint angles
@@ -113,7 +118,7 @@ classdef RobotClass
 
                 % update end-effector pose
                 endP = self.robot.fkine(qMatrix(i,:));
-                endP = endP  * troty(deg2rad(90+45));
+                endP = endP  * troty(deg2rad(180));
                 updatedPoints = [endP * [self.toolVerts,ones(self.toolVertexCount,1)]']';
                 self.tool.Vertices = updatedPoints(:,1:3);
                 drawnow();
@@ -141,7 +146,8 @@ classdef RobotClass
                 for j = 1:6
                     subplot(3,2,j)
                     plot(t,qd(:,j)*30/pi,'k','LineWidth',1);
-                    refline(0,0);
+                    refline(0,qd_max(j));
+                    refline(0,-qd_max(j));
                     ylabel('Velocity (RPM)');
                     box off
                 end
@@ -152,7 +158,8 @@ classdef RobotClass
                     subplot(3,2,j)
                     plot(t,qdd(:,j),'k','LineWidth',1);
                     ylabel('rad/s/s');
-                    refline(0,0)
+                    refline(0,qdd_max(j));
+                    refline(0,-qdd_max(j));
                     box off
                 end
 
