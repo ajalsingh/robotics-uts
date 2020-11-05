@@ -15,7 +15,7 @@ classdef RobotClass
         function self = RobotClass(robot_base_transform, tool_offset)
             mdl_puma560;
             self.robot = p560;
-            self.home = deg2rad([0 90 0 0 0 0]);
+            self.home = deg2rad([0 90 0 0 45 0]);
             self.initRobot(robot_base_transform, tool_offset)
             
             [f,v,data] = plyread('ply/tool.ply','tri');
