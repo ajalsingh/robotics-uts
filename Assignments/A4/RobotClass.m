@@ -92,23 +92,37 @@ classdef RobotClass
             qd = zeros(steps,6);                                                        % Array of joint velocities
             qdd = nan(steps,6);                                                         % Array of joint accelerations
             tau = nan(steps,6);                                                         % Array of joint torques
-            mass = 2.09;                                                                  % Payload mass (kg)
-            self.robot.payload(mass,[0;0;0]); 
             tau_max = [97.6 186.4 89.4 24.2 20.1 21.3]';
             qd_max = [8, 10, 10, 5, 5, 5]';
             qdd_max = [10, 12, 12, 8, 8, 8]';
             w = [0, 0, 209, 0, 0, 0]';
-
+            
+            mass = 2.09;                                                                  % Payload mass (kg)
+            grav = 9.81;
+            reaction = 209;
+            total_force = mass*grav - reaction;
+            total_mass = total_force/grav;
+            self.robot.payload(total_mass,[0;0;0]); 
+            
             for i = 1:steps-1
                 qdd(i,:) = (1/dt)^2 * (qMatrix(i+1,:) - qMatrix(i,:) - dt*qd(i,:));                 % Calculate joint acceleration to get to next set of joint angles
                 M = self.robot.inertia(qMatrix(i,:));                                               % Calculate inertia matrix at this pose
                 C = self.robot.coriolis(qMatrix(i,:),qd(i,:));                                      % Calculate coriolis matrix at this pose
                 J = self.robot.jacob0(qMatrix(i,:));                
                 g = self.robot.gravload(qMatrix(i,:));                                              % Calculate gravity vector at this pose
-                tau(i,:) = (M*qdd(i,:)' + C*qd(i,:)' + g'+ (J'*w))';                            % Calculate the joint torque needed
+                tau(i,:) = (M*qdd(i,:)' + C*qd(i,:)' + g' + J'*w)' ;                            % Calculate the joint torque needed
                 for j = 1:6
                     if abs(tau(i,j)) > tau_max(j)                                       % Check if torque exceeds limits
                         tau(i,j) = sign(tau(i,j))*tau_max(j);                           % Cap joint torque if above limits
+                    end
+                    % Check within max velocities
+                    if abs(qd(i,j)) > qd_max(j)                                       % Check if v exceeds limits
+                        qd(i,j) = sign(qd(i,j))*qd_max(j);                           % Cap joint v if above limits
+                    end
+
+                    % Check within max accelerations
+                    if abs(qdd(i,j)) > qdd_max(j)                                       % Check if a exceeds limits
+                        qdd(i,j) = sign(qdd(i,j))*qdd_max(j);                           % Cap joint a if above limits
                     end
                 end
                 qdd(i,:) = (inv(M)*(tau(i,:)' - C*qd(i,:)' - g'))';                     % Re-calculate acceleration based on actual torque
@@ -147,10 +161,10 @@ classdef RobotClass
                 figure(3)
                 for j = 1:6
                     subplot(3,2,j)
-                    plot(t,qd(:,j)*30/pi,'k','LineWidth',1);
+                    plot(t,qd(:,j),'k','LineWidth',1);
                     refline(0,qd_max(j));
                     refline(0,-qd_max(j));
-                    ylabel('Velocity (RPM)');
+                    ylabel('Velocity (rad/s)');
                     box off
                 end
 
