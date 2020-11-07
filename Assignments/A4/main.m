@@ -44,10 +44,10 @@ function  main
 
     % slow enough
     robot.moveArm(pose_1, 0.5, 0)
-    robot.moveArm(pose_2, 3, 1)
+    robot.moveArm(pose_2, 0.75, 1)
     %% 2 just fast enough to overload joint 6
     robot.moveArm(pose_1, 0.5, 0)
-    robot.moveArm(pose_2, 2.4, 1)
+    robot.moveArm(pose_2, 0.68, 1)
 %     robot.moveArm(robot.home, 1.2, 0);
 
 end
