@@ -14,7 +14,8 @@ function  main
     % b) drum transform
     xoffset = 0.5;
     yoffset = 1;
-    drum_transform = transl([xoffset, yoffset, 0])
+    zoffset = 0;
+    drum_transform = transl([xoffset, yoffset, zoffset])
     
     % c) calculate transform between base and drum
     transform_between_base_and_drum = (robot_base_transform + drum_transform)/2
@@ -33,7 +34,7 @@ function  main
     vertexColours = [data.vertex.red, data.vertex.green, data.vertex.blue] / 255;
 
     % Then plot the trisurf
-    trisurf(f,v(:,1)+xoffset,v(:,2)+yoffset, v(:,3) ...
+    trisurf(f,v(:,1)+xoffset,v(:,2)+yoffset, v(:,3)+zoffset ...
         ,'FaceVertexCData',vertexColours,'EdgeColor','interp','EdgeLighting','flat');
 
     %% Blast window
@@ -43,7 +44,7 @@ function  main
 
     % slow enough
     robot.moveArm(pose_1, 0.5, 0)
-    robot.moveArm(pose_2, 3, 1)
+    robot.moveArm(pose_2, 5, 1)
     %% 2 just fast enough to overload joint 6
     robot.moveArm(pose_1, 0.5, 0)
     robot.moveArm(pose_2, 2.4, 1)

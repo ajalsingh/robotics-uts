@@ -97,13 +97,15 @@ classdef RobotClass
             tau_max = [97.6 186.4 89.4 24.2 20.1 21.3]';
             qd_max = [8, 10, 10, 5, 5, 5]';
             qdd_max = [10, 12, 12, 8, 8, 8]';
+            w = [0, 0, 209, 0, 0, 0]';
 
             for i = 1:steps-1
                 qdd(i,:) = (1/dt)^2 * (qMatrix(i+1,:) - qMatrix(i,:) - dt*qd(i,:));                 % Calculate joint acceleration to get to next set of joint angles
                 M = self.robot.inertia(qMatrix(i,:));                                               % Calculate inertia matrix at this pose
                 C = self.robot.coriolis(qMatrix(i,:),qd(i,:));                                      % Calculate coriolis matrix at this pose
+                J = self.robot.jacob0(qMatrix(i,:));                
                 g = self.robot.gravload(qMatrix(i,:));                                              % Calculate gravity vector at this pose
-                tau(i,:) = (M*qdd(i,:)' + C*qd(i,:)' + g')';                            % Calculate the joint torque needed
+                tau(i,:) = (M*qdd(i,:)' + C*qd(i,:)' + g'+ (J'*w))';                            % Calculate the joint torque needed
                 for j = 1:6
                     if abs(tau(i,j)) > tau_max(j)                                       % Check if torque exceeds limits
                         tau(i,j) = sign(tau(i,j))*tau_max(j);                           % Cap joint torque if above limits
